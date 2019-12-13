@@ -105,7 +105,7 @@ function setClickListener() {
                 break;
             }
         }
-        $("#img").attr("src", "http://"+HOST+"/userdata/"+article["img_path"]);
+        $("#img").attr("src", "https://"+HOST+"/userdata/"+article["img_path"]);
         $("#writer").val(article["writer"]);
         $("#edit-article-ok").unbind().on("click", function() {
             var title = $("#title").val().trim();

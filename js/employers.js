@@ -60,7 +60,7 @@ function setEmployerListener() {
         $("#website").val(employer["website"]);
         $("#biodata").val(employer["biodata"]);
         profilePicture = employer["card_picture"];
-        $("#profile-picture").attr("src", "http://"+HOST+"/userdata/"+profilePicture);
+        $("#profile-picture").attr("src", "https://"+HOST+"/userdata/"+profilePicture);
         $("#container").css("display", "flex").hide().fadeIn(300);
         $("#ok").html("Ubah").unbind().on("click", function() {
             var fullName = $("#full-name").val().trim();
@@ -186,7 +186,7 @@ function addEmployer() {
     $("#password").val("HaloDunia123");
     $("#phone").val("+6281912340909");
     $("#company").val("Employer Two");
-    $("#website").val("http://danaos.xyz");
+    $("#website").val("https://danaos.xyz");
     $("#biodata").val("This is my biodata.");
     $("#ok").unbind().on("click", function() {
         var fullName = $("#full-name").val().trim();

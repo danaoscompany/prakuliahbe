@@ -59,7 +59,7 @@ sendEmail($email, 'Atur Ulang Kata Sandi', "
             <div onclick='window.location.href=\"https://prakuliah.com\"' style='color: #3498db; cursor: pointer; text-decoration: none;'>prakuliah.com   |    </div>
         </td>
         <td align='center'>
-            <div onclick='window.location.href=\"http://" . HOST . "/prakuliah/privacy_policy.html\"' style='margin-left: 10px; color: #3498db; cursor: pointer; text-decoration: none;'>Kebijakan Privasi   |   </div>
+            <div onclick='window.location.href=\"https://" . HOST . "/prakuliah/privacy_policy.html\"' style='margin-left: 10px; color: #3498db; cursor: pointer; text-decoration: none;'>Kebijakan Privasi   |   </div>
         </td>
         <td align='center'>
             <div style='margin-left: 10px; color: #000000;'>© " . date('Y') . " Prakuliah.com</div>

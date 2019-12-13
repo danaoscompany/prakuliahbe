@@ -1,6 +1,6 @@
 //const HOST = "localhost/prakuliahbe";
 const HOST = "139.99.22.150/prakuliahbe";
-const PHP_PATH = "http://"+HOST+"/php/";
+const PHP_PATH = "https://"+HOST+"/php/";
 
 function show(msg) {
     $("#toast-msg").html(msg);

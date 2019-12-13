@@ -180,7 +180,7 @@ function setPartnerClickListener() {
         $("#address").val(partner["address"]);
         $("#whatsapp-number").val(partner["whatsapp_number"]);
         if (partner["profile_picture"] != "") {
-            $("#profile-picture").attr("src", "http://"+HOST+"/userdata/"+partner["profile_picture"]);
+            $("#profile-picture").attr("src", "https://"+HOST+"/userdata/"+partner["profile_picture"]);
         }
         $("#container").css("display", "flex").hide().fadeIn(300);
         $("#ok").html("Ubah").unbind().on("click", function () {
