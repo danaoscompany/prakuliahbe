@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-messaging.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBZmRK_qHMbDR04hIXDSJLU93BwNkcCkYA",
+            authDomain: "joss-player.firebaseapp.com",
+            databaseURL: "https://joss-player.firebaseio.com",
+            projectId: "joss-player",
+            storageBucket: "joss-player.appspot.com",
+            messagingSenderId: "288867625833",
+            appId: "1:288867625833:web:1f30175e862496f6336bf8"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script>
+        const messaging = firebase.messaging();
+        messaging.usePublicVapidKey("BMATEC9vSMYogedkzELmghC6cFNSLT3mY7o62m5UllHdB0rkd1S-wpoBNKcpZv20edaVgavEEz7iYLaJyOVSUxI");
+        messaging.getToken().then((currentToken) => {
+
+        }).catch((err) => {
+            console.log(err.message);
+        });
+    </script>
+</head>
+<body>
+<p>Halo dunia 2</p>
+</body>
+</html>
