@@ -24,15 +24,15 @@ function login() {
             console.log("Response: "+a);
             var response = parseInt(a);
             hideProgress();
-            if (response == 0) {
-                localStorage.setItem("user_id", response);
-                window.location.href = "users.html";
-            } else if (response == -1) {
+            if (response == -1) {
                 show("Admin tidak terdaftar");
             } else if (response == -2) {
                 show("Kata sandi tidak cocok");
             } else if (response == -3) {
                 showAlert("Proses Masuk Gagal", "Mohon maaf. Proses masuk tidak bisa dilakukan karena admin kami belum menyetujui akun Anda. Silahkan coba beberapa saat lagi.");
+            } else {
+                localStorage.setItem("user_id", response);
+                window.location.href = "users.html";
             }
         }
     });
