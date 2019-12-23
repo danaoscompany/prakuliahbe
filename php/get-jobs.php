@@ -1,8 +1,6 @@
 <?php
 include 'db.php';
-$start = intval($_POST["start"]);
-$length = intval($_POST["length"]);
-$results = $c->query("SELECT * FROM jobs LIMIT " . $start . "," . $length);
+$results = $c->query("SELECT * FROM jobs");
 $jobs = [];
 if ($results && $results->num_rows > 0) {
 	while ($row = $results->fetch_assoc()) {
@@ -17,6 +15,16 @@ if ($results && $results->num_rows > 0) {
 			$row["employer"] = $employer["full_name"];
 			$row["employer_fcm_id"] = $employer["fcm_id"];
 		}
+		$cities = $c->query("SELECT * FROM popular_cities WHERE id=" . $row["city_id"]);
+		if ($cities && $cities->num_rows > 0) {
+		    $city = $cities->fetch_assoc();
+		    $row["city"] = $city["name"];
+        }
+		$categories = $c->query("SELECT * FROM job_categories WHERE id=" . $row["category_id"]);
+		if ($categories && $categories->num_rows > 0) {
+		    $category = $categories->fetch_assoc();
+		    $row["category"] = $category["name"];
+        }
 		array_push($jobs, $row);
 	}
 }

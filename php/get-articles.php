@@ -4,7 +4,7 @@ $items = [];
 $results = $c->query("SELECT * FROM articles");
 if ($results && $results->num_rows > 0) {
     while ($row = $results->fetch_assoc()) {
-        $categories = $c->query("SELECT * FROM article_categories WHERE id=" . $row["id"]);
+        $categories = $c->query("SELECT * FROM article_categories WHERE id=" . $row["category_id"]);
         if ($categories && $categories->num_rows > 0) {
             $row["category"] = $categories->fetch_assoc()["name"];
         }

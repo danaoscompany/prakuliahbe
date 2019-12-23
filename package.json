@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/danaossoftware/prakuliah",
+  "repository": "http://github.com/danaossoftware/prakuliah",
   "keywords": [
     "IPTV",
 	"player"

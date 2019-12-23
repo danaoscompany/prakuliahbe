@@ -55,6 +55,49 @@ function setAdminClickListener() {
         $("#email").val(admin["email"]);
         $("#password").val(admin["password"]);
         $("#container").css("display", "flex").hide().fadeIn(300);
+        showProgress("Memuat");
+        var fd = new FormData();
+        fd.append("user_id", admin["id"]);
+        fd.append("role", "admin");
+        $("#role-trusted").prop("checked", false);
+        $("#role-job-approval").prop("checked", false);
+        $("#role-chat").prop("checked", false);
+        $("#role-article").prop("checked", false);
+        //$("#role-admin").prop("checked", false);
+        $("#role-user").prop("checked", false);
+        $("#role-employer").prop("checked", false);
+        $.ajax({
+            type: 'POST',
+            url: PHP_PATH+'get-roles.php',
+            data: fd,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function(response) {
+                var roles = JSON.parse(response);
+                for (var i=0; i<roles.length; i++) {
+                    var role = roles[i];
+                    var roleID = parseInt(role["role_id"]);
+                    var enabled = parseInt(role["enabled"]);
+                    if (roleID == 1) {
+                        $("#role-trusted").prop("checked", (enabled == 1)?true:false);
+                    } else if (roleID == 2) {
+                        $("#role-job-approval").prop("checked", (enabled == 1)?true:false);
+                    } else if (roleID == 3) {
+                        $("#role-chat").prop("checked", (enabled == 1)?true:false);
+                    } else if (roleID == 4) {
+                        $("#role-article").prop("checked", (enabled == 1)?true:false);
+                    } else if (roleID == 5) {
+                        //$("#role-admin").prop("checked", (enabled == 1)?true:false);
+                    } else if (roleID == 6) {
+                        $("#role-user").prop("checked", (enabled == 1)?true:false);
+                    } else if (roleID == 7) {
+                        $("#role-employer").prop("checked", (enabled == 1)?true:false);
+                    }
+                }
+                hideProgress();
+            }
+        });
         $("#ok").html("Ubah").unbind().on("click", function() {
             var firstName = $("#first-name").val().trim();
             var lastName = $("#last-name").val().trim();
@@ -77,6 +120,22 @@ function setAdminClickListener() {
                 show("Mohon masukkan jumlah koneksi aktif minimal 1");
                 return;
             }*/
+            var rolesJSON = [];
+            var userID = admin["id"];
+            rolesJSON.push({'user_id': userID, 'role': 'admin', 'role_id': 1,
+                'enabled': ($("#role-trusted").prop("checked")==true)?1:0});
+            rolesJSON.push({'user_id': userID, 'role': 'admin', 'role_id': 2,
+                'enabled': ($("#role-job-approval").prop("checked")==true)?1:0});
+            rolesJSON.push({'user_id': userID, 'role': 'admin', 'role_id': 3,
+                'enabled': ($("#role-chat").prop("checked")==true)?1:0});
+            rolesJSON.push({'user_id': userID, 'role': 'admin', 'role_id': 4,
+                'enabled': ($("#role-article").prop("checked")==true)?1:0});
+            /*rolesJSON.push({'user_id': userID, 'role': 'admin', 'role_id': 5,
+                'enabled': ($("#role-admin").prop("checked")==true)?1:0});*/
+            rolesJSON.push({'user_id': userID, 'role': 'admin', 'role_id': 6,
+                'enabled': ($("#role-user").prop("checked")==true)?1:0});
+            rolesJSON.push({'user_id': userID, 'role': 'admin', 'role_id': 7,
+                'enabled': ($("#role-employer").prop("checked")==true)?1:0});
             showProgress("Mengubah admin");
             var fd = new FormData();
             fd.append("id", admin["id"]);
@@ -85,6 +144,7 @@ function setAdminClickListener() {
             fd.append("email", email);
             fd.append("password", password);
             fd.append("phone", phone);
+            fd.append("roles", JSON.stringify(rolesJSON));
             $.ajax({
                 type: 'POST',
                 url: PHP_PATH+'edit-admin.php',
@@ -95,7 +155,6 @@ function setAdminClickListener() {
                 success: function(a) {
                     hideProgress();
                     var response = a;
-                    console.log("Response: "+response);
                     if (response == 0) {
                         $("#container").fadeOut(300);
                         getAdmins();
@@ -125,16 +184,24 @@ function setAdminClickListener() {
                 return;
             }
             showProgress("Menghapus admin");
+            var fd = new FormData();
+            fd.append("admin_id", localStorage.getItem("user_id"));
+            fd.append("id", admin["id"]);
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: PHP_PATH+'delete-admin.php',
-                data: {'id': admin["id"]},
-                dataType: 'text',
+                data: fd,
+                processData: false,
+                contentType: false,
                 cache: false,
-                success: function(a) {
-                    hideProgress();
-                    show("Admin berhasil dihapus");
-                    getAdmins();
+                success: function(response) {
+                    if (response == "0") {
+                        hideProgress();
+                        show("Anda tidak memiliki hak akses untuk menghapus admin");
+                    } else if (response == "1") {
+                        show("Admin berhasil dihapus");
+                        getAdmins();
+                    }
                 }
             });
         });
@@ -186,7 +253,6 @@ function addAdmin() {
             let fileName = generateRandomID(14);
             fd2.append("file", currentProfilePictureFile);
             fd2.append("file_name", fileName);
-            console.log("Uploading image...");
             $.ajax({
                 type: 'POST',
                 url: PHP_PATH + 'upload-image.php',
@@ -195,7 +261,6 @@ function addAdmin() {
                 contentType: false,
                 cache: false,
                 success: function (a) {
-                    console.log("Profile picture name: "+fileName);
                     fd.append("profile_picture", fileName);
                     createAdmin(fd);
                 }
@@ -217,7 +282,6 @@ function createAdmin(fd) {
         success: function(a) {
             hideProgress();
             var response = a;
-            console.log("Response: "+response);
             if (response == 0) {
                 $("#container").fadeOut(300);
                 getAdmins();

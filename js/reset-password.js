@@ -32,7 +32,7 @@ function resetPassword() {
             contentType: false,
             cache: false,
             success: function(response) {
-                window.location.href = "https://"+HOST+"/password-reset-success.html";
+                window.location.href = "http://"+HOST+"/password-reset-success.html";
             }
         });
     }

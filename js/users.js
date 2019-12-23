@@ -77,7 +77,11 @@ function getUsers() {
                 if (remainingYears > 0) {
                     remainingTimeString = (remainingYears + " tahun ");
                 }
-                $("#users").append("" +
+                var verified = parseInt(user["verified"]);
+                var trusted = parseInt(user["trusted"]);
+                var recommended = parseInt(user["recommended"]);
+                var blocked = parseInt(user["blocked"]);
+                var row = "" +
                     "<tr>" +
                     "<td><div style='background-color: #2f2e4d; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: white; font-size: 15px;'>" + (i + 1) + "</div></td>" +
                     "<td><div class='custom-control custom-checkbox'>"+
@@ -86,12 +90,28 @@ function getUsers() {
                     "</div></td>"+
                     "<td style='font-size: 15px;'>" + user["first_name"] +" " + user["last_name"] + "</td>" +
                     "<td style='font-size: 15px;'>" + user["email"] + "</td>" +
-                    "<td style='font-size: 15px;'>" + user["phone"] + "</td>" +
-                    "<td style='font-size: 15px;'>" + user["nim"] + "</td>" +
-                    "<td style='font-size: 15px;'><a class='edit-user link'>Ubah</a></td>" +
+                    "<td style='font-size: 15px;'>" + user["phone"] + "</td>";
+                if (recommended == 1) {
+                    row += "<td style='font-size: 15px;'>Ya</td>";
+                } else {
+                    row += "<td style='font-size: 15px;'><a class='recommend link'>Rekomendasikan</a></td>";
+                }
+                row += "" +
+                    "<td style='font-size: 15px;'><a class='edit-user link'>Ubah</a></td>";
+                if (verified == 1) {
+                    row += "<td style='font-size: 15px; color: red;'>Terverifikasi</td>";
+                } else {
+                    row += "<td style='font-size: 15px;'><a class='verify link'>Verifikasi</a></td>";
+                }
+                if (blocked == 1) {
+                    row += "<td style='font-size: 15px;'><a class='block link'>Blokir</a></td>";
+                } else {
+                    row += "<td style='font-size: 15px;'>Tidak</td>";
+                }
+                row += "" +
                     "<td style='font-size: 15px;'><a class='delete-user link'>Hapus</a></td>" +
-                    "</tr>"
-                );
+                    "</tr>";
+                $("#users").append(row);
             }
             hideProgress();
             setUserClickListener();
@@ -160,6 +180,60 @@ function setUserClickListener() {
         if ($(this).prop('checked')) {
             $("#delete").css("display", "block");
         }
+    });
+    $(".recommend").unbind().on("click", function () {
+        var tr = $(this).parent().parent();
+        var index = tr.parent().children().index(tr);
+        var user = users[index];
+        $("#confirm-title").html("Rekomendasikan Pengguna");
+        $("#confirm-msg").html("Apakah Anda yakin ingin merekomendasikan pengguna ini?");
+        $("#confirm-ok").unbind().on("click", function() {
+            $("#confirm-container").hide();
+            showProgress("Merekomendasikan prakuliah");
+            var fd = new FormData();
+            fd.append("id", user["id"]);
+            $.ajax({
+                type: 'POST',
+                url: PHP_PATH+'recommend-user.php',
+                data: fd,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function(a) {
+                    show("Prakuliah direkomendasi");
+                    getUsers();
+                }
+            });
+        });
+        $("#confirm-cancel").unbind().on("click", function() {
+            $("#confirm-container").fadeOut(300);
+        });
+        $("#confirm-container").css("display", "flex").hide().fadeIn(300);
+    });
+    $(".verify").unbind().on("click", function () {
+        var tr = $(this).parent().parent();
+        var index = tr.parent().children().index(tr);
+        var user = users[index];
+        $("#confirm-msg").html("Apakah Anda yakin ingin memverifikasi prakuliah ini?");
+        $("#confirm-title").html("Verifikasi Prakuliah");
+        $("#confirm-ok").unbind().on("click", function() {
+            showProgress("Memverifikasi prakuliah");
+            $("#confirm-container").fadeOut(300);
+            var fd = new FormData();
+            fd.append("id", user["id"]);
+            $.ajax({
+                type: 'POST',
+                url: PHP_PATH+'verify-user.php',
+                data: fd,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function(response) {
+                    getUsers();
+                }
+            });
+        });
+        $("#confirm-container").css("display", "flex").hide().fadeIn(300);
     });
     $(".edit-user").unbind().on("click", function () {
         var tr = $(this).parent().parent();
@@ -248,16 +322,24 @@ function setUserClickListener() {
         $("#confirm-ok").unbind().on("click", function () {
             $("#confirm-container").hide();
             showProgress("Menghapus pengguna");
+            var fd = new FormData();
+            fd.append("admin_id", localStorage.getItem("user_id"));
+            fd.append("id", user["id"]);
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: PHP_PATH + 'delete-user.php',
-                data: {'id': user["id"]},
-                dataType: 'text',
+                data: fd,
+                processData: false,
+                contentType: false,
                 cache: false,
-                success: function (a) {
-                    firebase.database().ref("users/" + user["id"]).remove();
-                    hideProgress();
-                    getUsers();
+                success: function (response) {
+                    if (response == "0") {
+                        hideProgress();
+                        show("Anda tidak memiliki hak akses untuk menghapus prakuliah");
+                    } else if (response == "1") {
+                        show("Prakuliah berhasil dihapus");
+                        getUsers();
+                    }
                 }
             });
         });

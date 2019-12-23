@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script src="js/global.js"></script>
+    <script src="js/employees.js"></script>
+    <script src="js/moment.js"></script>
+    <link href="css/global.css" rel="stylesheet">
+    <link href="css/employees.css" rel="stylesheet">
+    <title>CV</title>
+</head>
+<body>
+<div style="width: 100%; height: 100%; display: flex; flex-flow: row nowrap; position: fixed; left: 0; top: 0;">
+    <div id="menu"></div>
+    <div style="width: calc(100% - 200px); display: flex; flex-flow: column nowrap; padding-top: 30px; overflow-y: scroll;">
+        <div style="display: flex; flex-flow: row nowrap; margin-left: 20px; margin-top: 20px;">
+            <img src="img/settings-2.png" width="50px" height="50px">
+            <div style="margin-left: 10px; font-size: 25px; color: #717179;">Daftar Lamaran</div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; width: 1000px; margin-left: 20px;">
+            <div style="position: relative; background-color: #eeeeee; border: 1px solid #cccccc; border-radius: 2px; width: 250px; height: 32px; margin-right: 10px;">
+                <input id="keyword"
+                       style="background-color: transparent; border: 0; padding-left: 5px; padding-right: 5px; position: absolute; top: 0; left: 0; width: calc(100% - 10px); height: 100%;">
+                <button style="position: absolute; top: 2px; right: 2px; bottom: 2px; height: 28px;" onclick="search()"
+                        class="button6">Cari
+                </button>
+            </div>
+            <!--<button onclick="addApplication()" class="button6">Tambah Lamaran</button>-->
+            <!--<button onclick="deleteApplications()" id="delete" style="display: none; width: 100px; margin-left: 10px;">Hapus</button>-->
+        </div>
+        <table class="flat-table" style="width: calc(100% - 40px); margin-left: 20px; margin-top: 10px;">
+            <thead>
+            <tr>
+                <th>No.</th>
+                <th>
+                    <div id="check-all" class='custom-control custom-checkbox'>
+                        <input id="check-all-checkbox" type='checkbox' class='custom-control-input'>
+                        <label class='custom-control-label' for='check-all-checkbox'></label>
+                <th>Karyawan</th>
+                <th>Pekerjaan</th>
+                <th>Tabungan</th>
+                <th>Pemberi Kerja</th>
+                <th>Lihat</th>
+                <th>Hapus</th>
+            </tr>
+            </thead>
+            <tbody id="employees">
+            </tbody>
+        </table>
+        <div>&nbsp;</div>
+    </div>
+</div>
+<div id="container"
+     style="position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: none; justify-content: center; align-items: center; background-color: rgba(0, 0, 0, .5); overflow-y: scroll;">
+    <div style="width: 500px; height: calc(100% - 100px); border-radius: 5px; box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .7); background-color: white; display: flex; flex-flow: column nowrap; overflow-y: scroll;">
+        <div style="width: 100%; padding-top: 10px; padding-bottom: 10px; color: #333333; font-family: PalanquinBold;">
+            <div id="title" style="margin-left: 20px; margin-right: 20px;">Edit Artikel</div>
+        </div>
+        <div style="width: 100%; height: 1px; background-color: rgba(0, 0, 0, .1);"></div>
+        <div style="color: #333333; font-family: PalanquinBold; margin-left: 20px; margin-right: 20px;">Nama lengkap:</div>
+        <input class="input2" id="name" type="text" style="width: calc(100% - 40px); margin-left: 20px; margin-right: 20px;">
+        <div style="color: #333333; font-family: PalanquinBold; margin-left: 20px; margin-right: 20px;">Nama pekerjaan:</div>
+        <input class="input2" id="job-title" type="text" style="width: calc(100% - 40px); margin-left: 20px; margin-right: 20px;">
+        <div style="color: #333333; font-family: PalanquinBold; margin-left: 20px; margin-right: 20px;">Gaji per Bulan:</div>
+        <input class="input2" id="salary" type="text" style="width: calc(100% - 40px); margin-left: 20px; margin-right: 20px;">
+        <div style="color: #333333; font-family: PalanquinBold; margin-left: 20px; margin-right: 20px;">Waktu mulai bekerja:</div>
+        <input class="input2" id="start-work-date" type="text" style="width: calc(100% - 40px); margin-left: 20px; margin-right: 20px;">
+        <div style="color: #333333; font-family: PalanquinBold; margin-left: 20px; margin-right: 20px;">Waktu akhir bekerja:</div>
+        <input class="input2" id="end-work-date" type="text" style="width: calc(100% - 40px); margin-left: 20px; margin-right: 20px;">
+        <div style="width: calc(100% - 15px); display: flex; flex-flow: row nowrap; justify-content: flex-end; margin-top: 10px; margin-right: 15px;">
+            <button onclick="closeEditDialog()" class="button5">Batal</button>
+            <button id="ok" class="button4" style="margin-left: 5px;">Ubah</button>
+        </div>
+        <div>&nbsp;</div>
+        </input>
+    </div>
+</div>
+<div id="confirm-container"
+     style="position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: none; justify-content: center; align-items: center; background-color: rgba(0, 0, 0, .8);">
+    <div style="background-color: white; width: 500px; border-radius: 8px; display: flex; flex-flow: column nowrap;">
+        <div style="width: 100%; display: flex; flex-flow: row nowrap; height: 40px; align-items: center; justify-content: space-between;">
+            <div id="confirm-title"
+                 style="color: #444444; font-size: 23px; margin-left: 20px; margin-right: 20px; white-space: nowrap;"></div>
+            <div id="close-confirm"
+                 style="cursor: pointer; width: 30px; height: 100%; display: flex; justify-content: center; align-items: center;">
+                <img src="img/close.png" width="15px" height="15px">
+            </div>
+        </div>
+        <div style="width: 100%; height: 1px; background-color: rgba(0, 0, 0, 0);"></div>
+        <div id="confirm-msg"
+             style="background-color: #eeeeee; color: black; padding-left: 20px; padding-right: 20px; padding-top: 10px; padding-bottom: 10px;">
+        </div>
+        <div style="border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; background-color: #eeeeee; width: 100%; display: flex; flex-flow: row nowrap; justify-content: flex-end;">
+            <button id="confirm-cancel" class="button3"
+                    style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px;">Batal
+            </button>
+            <button id="confirm-ok" class="button3" style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px;">
+                OK
+            </button>
+        </div>
+    </div>
+</div>
+<div id="loading-blocker"
+     style="background-color: rgba(0, 0, 0, .3); display: none; position: fixed; left: 0; top: 0; width: 100%; height: 100%;"></div>
+<div id="loading-container"
+     style="position: fixed; left: 0; bottom: 0; margin-bottom: -45px; width: 100%; height: 45px; color: white; font-family: PalanquinBold; display: flex; flex-flow: row nowrap; align-items: center; background-color: #3498db; transition: margin-bottom .5s;">
+    <div id="loading-msg" style="margin-left: 20px;"></div>
+</div>
+<div id="toast-container"
+     style="position: fixed; left: 0; bottom: 20px; width: 100%; display: none; justify-content: center;">
+    <div id="toast-msg"
+         style="border-radius: 5px; background-color: rgba(0, 0, 0, .8); color: white; height: 30px; padding-left: 20px; padding-right: 20px;"></div>
+</div>
+</body>
+</html>

@@ -1,62 +1,123 @@
 var articles = [];
 var categories = [];
 var selectedPictureData = null;
+var selectedPictureFile = null;
 var pictureChanged = false;
 
-$(document).ready(function() {
-    $("#menu").load('menu.html', function() {});
+$(document).ready(function () {
+    $("#menu").load('menu.html', function () {
+    });
     //$("#date").datepicker();
     $("#categories").prop("selectedIndex", 0);
-    $("#writer").on("change paste keyup", function() {
+    /*$("#writer").on("change paste keyup", function () {
         var writerName = $(this).val();
         $.ajax({
             type: 'POST',
-            url: PHP_PATH+'get-writers-by-name.php',
+            url: PHP_PATH + 'get-writers-by-name.php',
             data: constructFormData('name', writerName),
             processData: false,
             contentType: false,
             cache: false,
-            success: function(response) {
+            success: function (response) {
+                console.log("Writers: "+response);
                 var writers = [];
                 var writersJSON = JSON.parse(response);
-                for (var i=0; i<writersJSON.length; i++) {
+                for (var i = 0; i < writersJSON.length; i++) {
                     var writerJSON = writersJSON[i];
-                    writers.push(writerJSON["first_name"]+" "+writerJSON["last_name"]);
+                    writers.push(writerJSON["first_name"] + " " + writerJSON["last_name"]);
                 }
                 autocomplete(document.getElementById("writer"), writers);
             }
         });
-    });
+    });*/
     getArticles();
 });
+
+function addArticle() {
+    showProgress("Memuat");
+    selectedPictureFile = null;
+    selectedPictureData = null;
+    var fd = new FormData();
+    fd.append("user_id", localStorage.getItem("user_id"));
+    fd.append("role", "admin");
+    fd.append("role_id", 1);
+    $.ajax({
+        type: 'POST',
+        url: PHP_PATH + 'check-role.php',
+        data: fd,
+        processData: false,
+        contentType: false,
+        cache: false,
+        success: function (response) {
+            console.log("Response: " + response);
+            hideProgress();
+            var enabled = parseInt(response);
+            if (enabled == 0) {
+                show("Anda tidak memiliki hak akses untuk membuat artikel");
+            } else if (enabled == 1) {
+                $("#article-title").val("");
+                $("#content").val("");
+                $("#picture").attr("src", "img/article-img.jpg");
+                $("#container").css("display", "flex").hide().fadeIn(300);
+                $("#ok").html("Tambah").unbind().on("click", function () {
+                    var title = $("#article-title").val().trim();
+                    var content = $("#content").val().trim();
+                    var categoryIndex = $("#categories").prop("selectedIndex") - 1;
+                    var categoryID = categories[categoryIndex]["id"];
+                    var fd = new FormData();
+                    fd.append("title", title);
+                    fd.append("category_id", categoryID);
+                    fd.append("content", content);
+                    fd.append("img_path", "blog_images/" + uuidv4());
+                    fd.append("writer_id", localStorage.getItem("user_id"));
+                    fd.append("file", selectedPictureFile);
+                    $("#container").fadeOut(300);
+                    showProgress("Menambah artikel");
+                    $.ajax({
+                        type: 'POST',
+                        url: PHP_PATH + 'add-article.php',
+                        data: fd,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        success: function (response) {
+                            show("Berhasil menambah artikel");
+                            getArticles();
+                        }
+                    });
+                });
+            }
+        }
+    });
+}
 
 function getArticles() {
     $.ajax({
         type: 'GET',
-        url: PHP_PATH+'get-articles.php',
+        url: PHP_PATH + 'get-articles.php',
         dataType: 'text',
         cache: false,
-        success: function(response) {
+        success: function (response) {
             articles = JSON.parse(response);
-            for (var i=0; i<articles.length; i++) {
+            for (var i = 0; i < articles.length; i++) {
                 var article = articles[i];
                 var title = article["title"];
                 if (title.length > 25) {
-                    title = title.substr(0, 25)+"...";
+                    title = title.substr(0, 25) + "...";
                 }
                 var content = article["content"];
                 if (content.length > 25) {
-                    content = content.substr(0, 25)+"...";
+                    content = content.substr(0, 25) + "...";
                 }
                 var dateString = article["date"];
                 var date = moment(dateString, 'YYYY-MM-DD HH:mm:ss');
                 $("#articles").append("" +
                     "<tr>" +
                     "<td><div style='background-color: #2f2e4d; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: white;'>" + (i + 1) + "</div></td>" +
-                    "<td><div class='custom-control custom-checkbox'>"+
-                    "<input type='checkbox' class='custom-control-input' id='defaultUnchecked"+(i+1)+"'>"+
-                    "<label class='custom-control-label' for='defaultUnchecked"+(i+1)+"'></label>"+
-                    "</div></td>"+
+                    "<td><div class='custom-control custom-checkbox'>" +
+                    "<input type='checkbox' class='custom-control-input' id='defaultUnchecked" + (i + 1) + "'>" +
+                    "<label class='custom-control-label' for='defaultUnchecked" + (i + 1) + "'></label>" +
+                    "</div></td>" +
                     "<td>" + title + "</td>" +
                     "<td>" + article["category"] + "</td>" +
                     "<td>" + content + "</td>" +
@@ -71,16 +132,16 @@ function getArticles() {
             fd.append("name", "article_categories");
             $.ajax({
                 type: 'POST',
-                url: PHP_PATH+'get.php',
+                url: PHP_PATH + 'get.php',
                 data: fd,
                 processData: false,
                 contentType: false,
                 cache: false,
-                success: function(response) {
+                success: function (response) {
                     categories = JSON.parse(response);
-                    for (var i=0; i<categories.length; i++) {
+                    for (var i = 0; i < categories.length; i++) {
                         var category = categories[i];
-                        $("#categories").append("<option selected>"+category["name"]+"</option>");
+                        $("#categories").append("<option selected>" + category["name"] + "</option>");
                     }
                     setClickListener();
                     hideProgress();
@@ -91,56 +152,89 @@ function getArticles() {
 }
 
 function setClickListener() {
-    $(".edit").unbind().on("click", function() {
+    $(".edit").unbind().on("click", function () {
         pictureChanged = false;
         var tr = $(this).parent().parent();
         var index = $("#articles").children().index(tr);
         var article = articles[index];
-        $("#title").val(article["title"]);
+        $("#article-title").val(article["title"]);
         $("#content").val(article["content"]);
+        $("#picture").attr("src", "http://"+HOST+"/userdata/"+article["img_path"]);
         var category = article["category"];
-        for (var i=0; i<categories.length; i++) {
+        for (var i = 0; i < categories.length; i++) {
             if (categories[i]["id"] == article["category_id"]) {
-                $("#categories").prop("selectedIndex", i+1);
+                $("#categories").prop("selectedIndex", i + 1);
                 break;
             }
         }
-        $("#img").attr("src", "https://"+HOST+"/userdata/"+article["img_path"]);
-        $("#writer").val(article["writer"]);
-        $("#edit-article-ok").unbind().on("click", function() {
-            var title = $("#title").val().trim();
+        $("#img").attr("src", "http://" + HOST + "/userdata/" + article["img_path"]);
+        //$("#writer").val(article["writer"]);
+        $("#ok").html("Ubah").unbind().on("click", function () {
+            var title = $("#article-title").val().trim();
+            var content = $("#content").val().trim();
+            if (title == "") {
+                show("Mohon masukkan judul artikel");
+                return;
+            }
+            if (content == "") {
+                show("Mohon masukkan isi artikel");
+                return;
+            }
             var categoryIndex = $("#categories").prop("selectedIndex");
             if (categoryIndex == 0) {
                 show("Mohon pilih kategori");
                 return;
             }
-            var content = $("#content").val().trim();
-            if (pictureChanged) {
-                var fd = new FormData();
-
+            var categoryIndex = $("#categories").prop("selectedIndex") - 1;
+            var categoryID = categories[categoryIndex]["id"];
+            var fd = new FormData();
+            fd.append("id", parseInt(article["id"]));
+            fd.append("title", title);
+            fd.append("category_id", categoryID);
+            fd.append("content", content);
+            fd.append("img_path", "blog_images/" + uuidv4());
+            fd.append("writer_id", localStorage.getItem("user_id"));
+            fd.append("img_changed", (pictureChanged==true)?1:0);
+            if (selectedPictureFile != null) {
+                fd.append("file", selectedPictureFile);
             }
+            $("#container").fadeOut(300);
+            showProgress("Menambah artikel");
+            $.ajax({
+                type: 'POST',
+                url: PHP_PATH + 'edit-article.php',
+                data: fd,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (response) {
+                    show("Artikel diubah");
+                    getArticles();
+                }
+            });
         });
-        $("#edit-article-container").css("display", "flex").hide().fadeIn(300);
+        $("#container").css("display", "flex").hide().fadeIn(300);
     });
 }
 
 function changePicture() {
-    $("#select-picture-file").on("change", function() {
+    $("#select-picture-file").on("change", function () {
         var input = event.target;
         var reader = new FileReader();
-        reader.onload = function() {
+        reader.onload = function () {
             var content = reader.result;
             selectedPictureData = content;
             pictureChanged = true;
             $("#picture").attr("src", content);
         };
-        reader.readAsDataURL(input.files[0]);
+        selectedPictureFile = input.files[0];
+        reader.readAsDataURL(selectedPictureFile);
     });
     $("#select-picture-file").click();
 }
 
 function closeEditArticleDialog() {
-    $("#edit-article-container").fadeOut(300);
+    $("#container").fadeOut(300);
 }
 
 function autocomplete(inp, arr) {
@@ -148,11 +242,13 @@ function autocomplete(inp, arr) {
     the text field element and an array of possible autocompleted values:*/
     var currentFocus;
     /*execute a function when someone writes in the text field:*/
-    inp.addEventListener("input", function(e) {
+    inp.addEventListener("input", function (e) {
         var a, b, i, val = this.value;
         /*close any already open lists of autocompleted values*/
         closeAllLists();
-        if (!val) { return false;}
+        if (!val) {
+            return false;
+        }
         currentFocus = -1;
         /*create a DIV element that will contain the items (values):*/
         a = document.createElement("DIV");
@@ -172,7 +268,7 @@ function autocomplete(inp, arr) {
                 /*insert a input field that will hold the current array item's value:*/
                 b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
                 /*execute a function when someone clicks on the item value (DIV element):*/
-                b.addEventListener("click", function(e) {
+                b.addEventListener("click", function (e) {
                     /*insert the value for the autocomplete text field:*/
                     inp.value = this.getElementsByTagName("input")[0].value;
                     /*close the list of autocompleted values,
@@ -184,7 +280,7 @@ function autocomplete(inp, arr) {
         }
     });
     /*execute a function presses a key on the keyboard:*/
-    inp.addEventListener("keydown", function(e) {
+    inp.addEventListener("keydown", function (e) {
         var x = document.getElementById(this.id + "autocomplete-list");
         if (x) x = x.getElementsByTagName("div");
         if (e.keyCode == 40) {
@@ -208,6 +304,7 @@ function autocomplete(inp, arr) {
             }
         }
     });
+
     function addActive(x) {
         /*a function to classify an item as "active":*/
         if (!x) return false;
@@ -218,12 +315,14 @@ function autocomplete(inp, arr) {
         /*add class "autocomplete-active":*/
         x[currentFocus].classList.add("autocomplete-active");
     }
+
     function removeActive(x) {
         /*a function to remove the "active" class from all autocomplete items:*/
         for (var i = 0; i < x.length; i++) {
             x[i].classList.remove("autocomplete-active");
         }
     }
+
     function closeAllLists(elmnt) {
         /*close all autocomplete lists in the document,
         except the one passed as an argument:*/
@@ -234,6 +333,7 @@ function autocomplete(inp, arr) {
             }
         }
     }
+
     /*execute a function when someone clicks in the document:*/
     document.addEventListener("click", function (e) {
         closeAllLists(e.target);

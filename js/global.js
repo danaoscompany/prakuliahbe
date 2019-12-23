@@ -1,6 +1,6 @@
-//const HOST = "localhost/prakuliahbe";
-const HOST = "139.99.22.150/prakuliahbe";
-const PHP_PATH = "https://"+HOST+"/php/";
+const HOST = "localhost/prakuliahbe";
+//const HOST = "139.99.22.150/prakuliahbe";
+const PHP_PATH = "http://"+HOST+"/php/";
 
 function show(msg) {
     $("#toast-msg").html(msg);
@@ -92,6 +92,10 @@ function openApplications() {
     window.location.href = "applications.html";
 }
 
+function openJobs() {
+    window.location.href = "jobs.html";
+}
+
 function openFinances() {
     window.location.href = "finances.html";
 }
@@ -102,6 +106,22 @@ function openArticles() {
 
 function openCVs() {
     window.location.href = "cvs.html";
+}
+
+function openEmployees() {
+    window.location.href = "employees.html";
+}
+
+function openJobCategories() {
+    window.location.href = "job-categories.html";
+}
+
+function openMessages() {
+    window.location.href = "messages.html";
+}
+
+function openUniversities() {
+    window.location.href = "universities.html";
 }
 
 function generateRandomID(length) {

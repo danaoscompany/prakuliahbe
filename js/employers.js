@@ -24,8 +24,10 @@ function getEmployers() {
             employers = JSON.parse(response);
             for (var i=0; i<employers.length; i++) {
                 var employer = employers[i];
-                $("#employers").append("" +
-                    "<tr>" +
+                var verified = parseInt(employer["verified"]);
+                var recommended = parseInt(employer["recommended"]);
+                var blocked = parseInt(employer["blocked"]);
+                var row = "<tr>" +
                     "<td><div style='background-color: #2f2e4d; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: white; font-size: 15px;'>" + (i + 1) + "</div></td>" +
                     "<td><div class='custom-control custom-checkbox'>"+
                     "<input type='checkbox' class='custom-control-input' id='defaultUnchecked"+(i+1)+"'>"+
@@ -33,12 +35,27 @@ function getEmployers() {
                     "</div></td>"+
                     "<td style='font-size: 15px;'>" + employer["full_name"] + "</td>" +
                     "<td style='font-size: 15px;'>" + employer["email"] + "</td>" +
-                    "<td style='font-size: 15px;'>" + employer["phone"] + "</td>" +
-                    "<td style='font-size: 15px;'>" + employer["company_name"] + "</td>" +
-                    "<td style='font-size: 15px;'><a class='edit-employer link'>Ubah</a></td>" +
+                    "<td style='font-size: 15px;'>" + employer["company_name"] + "</td>";
+                if (recommended == 1) {
+                    row += "<td style='font-size: 15px;'>Ya</td>";
+                } else {
+                    row += "<td style='font-size: 15px;'><a class='recommend link'>Rekomendasikan</a></td>";
+                }
+                row += "<td style='font-size: 15px;'><a class='edit-employer link'>Ubah</a></td>";
+                if (verified == 1) {
+                    row += "<td style='font-size: 15px; color: red;'>Terverifikasi</td>";
+                } else {
+                    row += "<td style='font-size: 15px;'><a class='verify link'>Verifikasi</a></td>";
+                }
+                if (blocked == 1) {
+                    row += "<td style='font-size: 15px;'><a class='block link'>Blokir</a></td>";
+                } else {
+                    row += "<td style='font-size: 15px;'>Tidak</td>";
+                }
+                row += "" +
                     "<td style='font-size: 15px;'><a class='delete-employer link'>Hapus</a></td>" +
-                    "</tr>"
-                );
+                    "</tr>";
+                $("#employers").append(row);
             }
             hideProgress();
             setEmployerListener();
@@ -47,6 +64,64 @@ function getEmployers() {
 }
 
 function setEmployerListener() {
+    $(".recommend").unbind().on("click", function() {
+        var tr = $(this).parent().parent();
+        var index = tr.parent().children().index(tr);
+        var employer = employers[index];
+        $("#confirm-title").html("Rekomendasikan Pemberi Kerja");
+        $("#confirm-msg").html("Apakah Anda yakin ingin merekomendasikan pemberi kerja ini?");
+        $("#confirm-ok").unbind().on("click", function() {
+            $("#confirm-container").hide();
+            showProgress("Merekomendasikan pemberi kerja");
+            var fd = new FormData();
+            fd.append("id", employer["id"]);
+            $.ajax({
+                type: 'POST',
+                url: PHP_PATH+'recommend-employer.php',
+                data: fd,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function(a) {
+                    show("Pemberi kerja direkomendasi");
+                    getEmployers();
+                }
+            });
+        });
+        $("#confirm-cancel").unbind().on("click", function() {
+            $("#confirm-container").fadeOut(300);
+        });
+        $("#confirm-container").css("display", "flex").hide().fadeIn(300);
+    });
+    $(".verify").unbind().on("click", function() {
+        var tr = $(this).parent().parent();
+        var index = tr.parent().children().index(tr);
+        var employer = employers[index];
+        $("#confirm-title").html("Verifikasi Pemberi Kerja");
+        $("#confirm-msg").html("Apakah Anda yakin ingin memverifikasi pemberi kerja berikut?");
+        $("#confirm-ok").unbind().on("click", function() {
+            $("#confirm-container").hide();
+            showProgress("Memverifikasi pemberi kerja");
+            var fd = new FormData();
+            fd.append("id", employer["id"]);
+            $.ajax({
+                type: 'POST',
+                url: PHP_PATH+'verify-employer.php',
+                data: fd,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function(a) {
+                    show("Pemberi kerja diverifikasi");
+                    getEmployers();
+                }
+            });
+        });
+        $("#confirm-cancel").unbind().on("click", function() {
+            $("#confirm-container").fadeOut(300);
+        });
+        $("#confirm-container").css("display", "flex").hide().fadeIn(300);
+    });
     $(".edit-employer").unbind().on("click", function() {
         profilePictureChanged = false;
         var tr = $(this).parent().parent();
@@ -60,7 +135,7 @@ function setEmployerListener() {
         $("#website").val(employer["website"]);
         $("#biodata").val(employer["biodata"]);
         profilePicture = employer["card_picture"];
-        $("#profile-picture").attr("src", "https://"+HOST+"/userdata/"+profilePicture);
+        $("#profile-picture").attr("src", "http://"+HOST+"/userdata/"+profilePicture);
         $("#container").css("display", "flex").hide().fadeIn(300);
         $("#ok").html("Ubah").unbind().on("click", function() {
             var fullName = $("#full-name").val().trim();
@@ -123,8 +198,10 @@ function setEmployerListener() {
             $("#confirm-container").fadeOut(300);
         });
         $("#confirm-ok").unbind().on("click", function() {
+            $("#confirm-container").fadeOut(300);
             showProgress("Menghapus employer");
             var fd = new FormData();
+            fd.append("admin_id", localStorage.getItem("user_id"));
             fd.append("id", employer["id"]);
             $.ajax({
                 type: 'POST',
@@ -134,10 +211,13 @@ function setEmployerListener() {
                 contentType: false,
                 cache: false,
                 success: function(response) {
-                    console.log("Response: "+response);
-                    hideProgress();
-                    $("#confirm-container").fadeOut(300);
-                    getEmployers();
+                    if (response == "0") {
+                        hideProgress();
+                        show("Anda tidak memiliki hak akses untuk menghapus pemberi kerja");
+                    } else if (response == "1") {
+                        show("Pemberi kerja berhasil dihapus");
+                        getEmployers();
+                    }
                 }
             });
         });
@@ -186,7 +266,7 @@ function addEmployer() {
     $("#password").val("HaloDunia123");
     $("#phone").val("+6281912340909");
     $("#company").val("Employer Two");
-    $("#website").val("https://danaos.xyz");
+    $("#website").val("http://danaos.xyz");
     $("#biodata").val("This is my biodata.");
     $("#ok").unbind().on("click", function() {
         var fullName = $("#full-name").val().trim();

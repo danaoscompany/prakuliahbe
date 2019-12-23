@@ -59,6 +59,39 @@
             <button onclick="selectProfilePicture()" class="button6" style="margin-top: 10px;">Ubah Foto Profil</button>
             <input id="select-profile-picture" style="width: 0; height: 0;" type="file" accept="image/*">
         </div>
+        <div style="color: #333333; font-family: PalanquinBold; margin-left: 20px; margin-right: 20px;">Hak istimewa:</div>
+        <div style="width: calc(100% - 40px); margin-left: 20px; margin-right: 20px; display: flex; flex-flow: column nowrap;">
+            <div style="display: flex; flex-flow: column nowrap;">
+                <div>
+                    <input id="role-trusted" type="checkbox" name="role-trusted">
+                    <label for="role-trusted">Memberi status trusted</label>
+                </div>
+                <div>
+                    <input id="role-job-approval" type="checkbox" name="role-job-approval">
+                    <label for="role-job-approval">Menyetujui pekerjaan</label>
+                </div>
+                <div>
+                    <input id="role-chat" type="checkbox" name="role-chat">
+                    <label for="role-chat">Melakukan chat</label>
+                </div>
+                <div>
+                    <input id="role-article" type="checkbox" name="role-article">
+                    <label for="role-article">Membuat artikel</label>
+                </div>
+                <!--<div>
+                    <input id="role-admin" type="checkbox" name="role-admin">
+                    <label for="role-admin">Mengubah dan menghapus admin lain</label>
+                </div>-->
+                <div>
+                    <input id="role-user" type="checkbox" name="role-user">
+                    <label for="role-user">Mengubah dan menghapus prakuliah</label>
+                </div>
+                <div>
+                    <input id="role-employer" type="checkbox" name="role-employer">
+                    <label for="role-employer">Mengubah dan menghapus pemberi kerja</label>
+                </div>
+            </div>
+        </div>
         <div style="width: calc(100% - 15px); display: flex; flex-flow: row nowrap; justify-content: flex-end; margin-top: 10px; margin-right: 15px;">
             <button onclick="closeEditAdminDialog()" class="button5">Batal</button>
             <button id="ok" class="button4" style="margin-left: 5px;">Tambah</button>

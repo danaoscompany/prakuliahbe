@@ -3,7 +3,7 @@ function sendMessage($title, $body) {
 $notification = array('title' =>$title , 'body' => $body, 'sound' => 'default', 'badge' => '1');
 $data = array('to' => '/topics/all', 'notification' => $notification, 'priority'=>'high');
 $json = json_encode($data);
-$url = 'https://fcm.googleapis.com/fcm/send';
+$url = 'http://fcm.googleapis.com/fcm/send';
 $server_key = 'AAAAQ0HaK2k:APA91bFS-FA9qbzC7AQ25VJS9W_9vaO5yLPd9XcbaNwaFCvpROH8J1Tu8QEDNKdS8joA49QSg0v6YsaZR2-fcE_yHm4smeqmIAPXQXdRmhzue4zg-768pNbDdj3X4Ewwz67yGKvkCua0';
 $headers = array(
     'Content-Type:application/json',

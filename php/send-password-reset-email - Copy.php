@@ -18,7 +18,7 @@ sendEmail('danaoscompany@gmail.com', 'Atur Ulang Kata Sandi', "
 <div style='display: flex; width: 100%; align-items: center; flex-flow: column nowrap; margin-top: 20px; font-family: Helvetica; line-height: 25px;'>
 	<div style='font-size: 25px; color: black; font-family: Helvetica;'>Atur ulang kata sandi Anda</div>
 	<br/>
-	<div onclick='window.location.href=\"https://" . HOST . "/prakuliah/reset-password.html?id=" . $resetID . "\"' style='display: flex; justify-content: center; align-items: center; background-image: linear-gradient(#4776E6, #8E54E9); padding-left: 20px; padding-right: 20px; height: 40px; border: 0; border-radius: 3px; color: white; font-size: 15px; cursor: pointer;'>
+	<div onclick='window.location.href=\"http://" . HOST . "/prakuliah/reset-password.html?id=" . $resetID . "\"' style='display: flex; justify-content: center; align-items: center; background-image: linear-gradient(#4776E6, #8E54E9); padding-left: 20px; padding-right: 20px; height: 40px; border: 0; border-radius: 3px; color: white; font-size: 15px; cursor: pointer;'>
 		Atur Ulang Kata Sandi
 	</div>
 	<div style='width: 100%; height: 1px; background-color: black; margin-top: 20px;'></div><br/>
@@ -31,8 +31,8 @@ sendEmail('danaoscompany@gmail.com', 'Atur Ulang Kata Sandi', "
 	<br/><br/>
 	<div style='width: 100%; height: 1px; background-color: black; margin-top: 20px;'></div><br/>
 	<div style='width: 100%; display: flex; justify-content: center; align-items: center; flex-flow: row nowrap;'>
-		<div onclick='window.location.href=\"https://prakuliah.com\"' style='color: #3498db; cursor: pointer;'>prakuliah.com</div><div style='margin-left: 10px;'>|</div>
-		<div onclick='window.location.href=\"https://" . HOST . "/prakuliah/privacy_policy.html\"' style='margin-left: 10px; color: #3498db; cursor: pointer;'>Kebijakan Privasi</div><div style='margin-left: 10px;'>|</div>
+		<div onclick='window.location.href=\"http://prakuliah.com\"' style='color: #3498db; cursor: pointer;'>prakuliah.com</div><div style='margin-left: 10px;'>|</div>
+		<div onclick='window.location.href=\"http://" . HOST . "/prakuliah/privacy_policy.html\"' style='margin-left: 10px; color: #3498db; cursor: pointer;'>Kebijakan Privasi</div><div style='margin-left: 10px;'>|</div>
 		<div style='margin-left: 10px; color: #000000;'>© " . date('Y') . " Prakuliah.com</div>
 	</div>
 </div>
