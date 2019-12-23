@@ -1,5 +1,6 @@
 <?php
 session_id("prakuliah");
 session_start();
-unset($_SESSION["prakuliah_user_id"]);
+$_SESSION["logged_in"] = false;
+unset($_SESSION["logged_in"]);
 session_destroy();

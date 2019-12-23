@@ -15,7 +15,7 @@ if ($results && $results->num_rows > 0) {
     }
     session_id("prakuliah");
     session_start();
-    $_SESSION["prakuliah_user_id"] = $row["id"];
+    $_SESSION["logged_in"] = true;
     echo $row["id"];
 } else {
     echo -1;
